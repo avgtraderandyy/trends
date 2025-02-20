@@ -1,0 +1,3 @@
+# requirements.txt
+selenium==4.15.2
+webdriver-manager==4.0.1
