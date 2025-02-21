@@ -118,4 +118,30 @@ def get_twitter_trends_data():
     except Exception as e:
         print(e)
 
-get_twitter_trends_data()
+def get_trending_videos():
+    api_key = os.environ.get("YOUTUBE_API_KEY") # Replace with your API key
+    url = f"https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics,contentDetails&chart=mostPopular&regionCode=US&maxResults=50&key={api_key}"
+    response = requests.get(url)
+    if response.status_code == 200:
+        data = response.json()
+        videos = []
+        for item in data["items"]:
+            video_details = {
+                "title": item["snippet"]["title"],
+                "videoId": item["id"],
+                "channelTitle": item["snippet"]["channelTitle"],
+                "views": item["statistics"].get("viewCount", "N/A"),  # Use .get() to avoid KeyError
+                "likes": item["statistics"].get("likeCount", "N/A"),  # Some videos may not have likes
+                "thumbnail": item["snippet"]["thumbnails"]["high"]["url"],
+                "duration": item["contentDetails"]["duration"],
+            }
+            videos.append(video_details)
+        return videos
+    else:
+        return f"Error: {response.status_code}"
+
+
+# get_twitter_trends_data()
+trending_videos = get_trending_videos()
+for video in trending_videos:
+    print(video)
